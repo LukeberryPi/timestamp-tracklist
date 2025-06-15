@@ -57,6 +57,18 @@ export default function App() {
     }
   };
 
+  const handleRemove = () => {
+    const sure = confirm("Are you sure? This is irreversible.");
+    if (!sure) {
+      return;
+    }
+    setFile(null);
+    setText("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile && isCueFile(selectedFile)) {
@@ -116,16 +128,7 @@ export default function App() {
                 {file ? (
                   <div className="space-y-2">
                     <p className="text-green-500">File loaded: {file.name}</p>
-                    <Button
-                      variant="destructive"
-                      onClick={() => {
-                        setFile(null);
-                        setText("");
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = "";
-                        }
-                      }}
-                    >
+                    <Button variant="destructive" onClick={handleRemove}>
                       {<Trash2 />}
                       Remove File
                     </Button>
