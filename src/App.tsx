@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { jsonToMultilineString, parseCueFileToJSON } from "@/lib/utils";
+import { cn, jsonToMultilineString, parseCueFileToJSON } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -11,13 +11,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { Copy, Trash2, Upload } from "lucide-react";
+import { Check, Copy, Trash2, Upload } from "lucide-react";
 
 export default function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [offset, setOffset] = useState(0);
   const [text, setText] = useState("");
+  const [showCopied, setShowCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isCueFile = (file: File) => {
@@ -74,14 +75,18 @@ export default function App() {
     }
   };
 
-  const copyToClipboard = async () => {
+  async function handleCopy() {
     try {
       await navigator.clipboard.writeText(text);
+      setShowCopied(true);
+      setTimeout(() => {
+        setShowCopied(false);
+      }, 5000);
       toast("Copied!");
     } catch (err) {
       toast(`Error: ${err}`);
     }
-  };
+  }
 
   return (
     <>
@@ -187,8 +192,14 @@ export default function App() {
                 <h2 className="text-2xl font-semibold">
                   Tracklist with Timestamps
                 </h2>
-                <Button IconLeft={<Copy />} onClick={copyToClipboard}>
-                  Copy to Clipboard
+                <Button
+                  className={cn({
+                    "bg-emerald-600 hover:bg-emerald-600": showCopied,
+                  })}
+                  IconLeft={showCopied ? <Check /> : <Copy />}
+                  onClick={handleCopy}
+                >
+                  {showCopied ? "Copied" : "Copy to Clipboard"}
                 </Button>
               </div>
               <Textarea
