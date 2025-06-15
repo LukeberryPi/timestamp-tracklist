@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
+import { Copy, Trash2, Upload } from "lucide-react";
 
 export default function App() {
   const [isDragging, setIsDragging] = useState(false);
@@ -44,12 +45,11 @@ export default function App() {
         const rawCueContent = await droppedFile.text();
         const cueJson = parseCueFileToJSON(rawCueContent);
         const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson);
-        console.log(formattedTracklistWithTimestamps);
-        setText(formattedTracklistWithTimestamps); // Automatically load the cue file content into textarea
+        setText(formattedTracklistWithTimestamps);
         setFile(droppedFile);
         toast("Cue file loaded");
       } catch (err) {
-        toast("Error");
+        toast(`Error: ${err}`);
       }
     } else {
       toast("Invalid file");
@@ -60,12 +60,14 @@ export default function App() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile && isCueFile(selectedFile)) {
       try {
-        const text = await selectedFile.text();
-        setText(text); // Automatically load the cue file content into textarea
+        const rawCueContent = await selectedFile.text();
+        const cueJson = parseCueFileToJSON(rawCueContent);
+        const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson);
+        setText(formattedTracklistWithTimestamps);
         setFile(selectedFile);
         toast("Cue file added.");
       } catch (err) {
-        toast("Error");
+        toast(`Error: ${err}`);
       }
     } else {
       toast("Invalid file");
@@ -77,7 +79,7 @@ export default function App() {
       await navigator.clipboard.writeText(text);
       toast("Copied!");
     } catch (err) {
-      toast("Error");
+      toast(`Error: ${err}`);
     }
   };
 
@@ -88,7 +90,7 @@ export default function App() {
           <div className="fixed inset-0 z-50 pointer-events-none">
             <div className="absolute inset-2 border-4 border-dashed border-green-500 bg-green-500/20" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg text-center">
+              <div className="bg-green-500 text-white px-6 py-4 rounded-lg text-center">
                 <p className="text-2xl font-bold">Drop your file anywhere!</p>
               </div>
             </div>
@@ -108,9 +110,9 @@ export default function App() {
               <div className="p-8 border-2 border-dashed rounded-lg text-center">
                 {file ? (
                   <div className="space-y-2">
-                    <p className="text-green-600">File loaded: {file.name}</p>
+                    <p className="text-green-500">File loaded: {file.name}</p>
                     <Button
-                      variant="outline"
+                      variant="destructive"
                       onClick={() => {
                         setFile(null);
                         setText("");
@@ -119,12 +121,13 @@ export default function App() {
                         }
                       }}
                     >
+                      {<Trash2 />}
                       Remove File
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-zinc-600">
+                    <p className="text-black">
                       Drag and drop your .cue file anywhere, or click below to
                       upload it
                     </p>
@@ -135,7 +138,11 @@ export default function App() {
                       accept=".cue"
                       className="hidden"
                     />
-                    <Button onClick={() => fileInputRef.current?.click()}>
+                    <Button
+                      variant="default"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload />
                       Upload
                     </Button>
                   </div>
@@ -144,7 +151,7 @@ export default function App() {
             </div>
 
             <div className="space-y-4">
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible>
                 <AccordionItem value="item-1">
                   <AccordionTrigger>Intro Offset</AccordionTrigger>
                   <AccordionContent>
@@ -171,7 +178,7 @@ export default function App() {
                   min={0}
                   max={60}
                 />
-                <span className="text-sm text-zinc-500">seconds</span>
+                <span className="text-sm text-black">seconds</span>
               </div>
             </div>
 
@@ -180,7 +187,9 @@ export default function App() {
                 <h2 className="text-2xl font-semibold">
                   Tracklist with Timestamps
                 </h2>
-                <Button onClick={copyToClipboard}>Copy to Clipboard</Button>
+                <Button IconLeft={<Copy />} onClick={copyToClipboard}>
+                  Copy to Clipboard
+                </Button>
               </div>
               <Textarea
                 value={text}
