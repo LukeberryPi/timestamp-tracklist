@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -101,14 +101,14 @@ export default function App() {
   }
 
   return (
-    <>
+    <main className="selection:bg-blue-500 selection:text-white">
       <div className="relative">
         {isDragging && (
           <div className="fixed inset-0 z-50 pointer-events-none">
-            <div className="absolute inset-2 border-4 border-dashed border-green-500 bg-green-500/20" />
+            <div className="absolute inset-2 border-4 border-dashed border-blue-500 bg-blue-500/20" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-green-500 text-white px-6 py-4 rounded-lg text-center">
-                <p className="text-2xl font-bold">Drop your file anywhere!</p>
+              <div className="bg-blue-500 text-white px-4 py-2 text-center ring ring-black">
+                <p className="text-3xl font-bold">Drop your file anywhere!</p>
               </div>
             </div>
           </div>
@@ -119,15 +119,26 @@ export default function App() {
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          className="min-h-screen p-8 space-y-8"
+          data-has-file={!!file}
+          className="group min-h-screen p-8 space-y-8"
         >
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl font-bold">Upload your .cue file!</h1>
-              <div className="p-8 border-2 border-dashed rounded-lg text-center">
+              <div
+                className={cn(
+                  "p-4 border-2 border-dashed border-blue-500 text-center",
+                  {
+                    "border-emerald-500 border-solid bg-emerald-500/10": !!file,
+                  }
+                )}
+              >
                 {file ? (
                   <div className="space-y-2">
-                    <p className="text-green-500">File loaded: {file.name}</p>
+                    <p className="text-black">
+                      File loaded:{" "}
+                      <span className="font-bold">{file.name}</span>
+                    </p>
                     <Button variant="destructive" onClick={handleRemove}>
                       {<Trash2 />}
                       Remove File
@@ -197,7 +208,7 @@ export default function App() {
                 </h2>
                 <Button
                   className={cn({
-                    "bg-emerald-600 hover:bg-emerald-600": showCopied,
+                    "bg-emerald-500 hover:bg-emerald-500": showCopied,
                   })}
                   IconLeft={showCopied ? <Check /> : <Copy />}
                   onClick={handleCopy}
@@ -215,6 +226,6 @@ export default function App() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }
