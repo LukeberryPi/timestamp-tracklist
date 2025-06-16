@@ -48,12 +48,12 @@ export default function App() {
         const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson);
         setText(formattedTracklistWithTimestamps);
         setFile(droppedFile);
-        toast("Cue file loaded");
+        toast.success("Cue file loaded");
       } catch (err) {
-        toast(`Error: ${err}`);
+        toast.error(`Error: ${err}`);
       }
     } else {
-      toast("Invalid file");
+      toast.error("Invalid file type");
     }
   };
 
@@ -67,6 +67,7 @@ export default function App() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    toast.info("File removed");
   };
 
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,12 +79,12 @@ export default function App() {
         const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson);
         setText(formattedTracklistWithTimestamps);
         setFile(selectedFile);
-        toast("Cue file added.");
+        toast.success("Cue file loaded");
       } catch (err) {
-        toast(`Error: ${err}`);
+        toast.error(`Error: ${err}`);
       }
     } else {
-      toast("Invalid file");
+      toast.error("Invalid file");
     }
   };
 
@@ -93,10 +94,10 @@ export default function App() {
       setShowCopied(true);
       setTimeout(() => {
         setShowCopied(false);
-      }, 5000);
-      toast("Copied!");
+      }, 3000);
+      toast.success("Copied!");
     } catch (err) {
-      toast(`Error: ${err}`);
+      toast.error(`Error: ${err}`);
     }
   }
 
