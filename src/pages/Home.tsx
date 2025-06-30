@@ -1,29 +1,18 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { cn, jsonToMultilineString, parseCueFileToJSON } from "@/lib/utils";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  cn,
+  jsonToMultilineString,
+  parseCueFileToJSON,
+  isCueFile,
+} from "@/lib/utils";
 import { toast } from "sonner";
-import { Check, Copy, Trash2, Upload } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 
-export default function App() {
+export function HomePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [offset, setOffset] = useState(0);
-  const [text, setText] = useState("");
-  const [showCopied, setShowCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const isCueFile = (file: File) => {
-    return file.name.toLowerCase().endsWith(".cue");
-  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -46,7 +35,6 @@ export default function App() {
         const rawCueContent = await droppedFile.text();
         const cueJson = parseCueFileToJSON(rawCueContent);
         const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson);
-        setText(formattedTracklistWithTimestamps);
         setFile(droppedFile);
         toast.success("Cue file loaded");
       } catch (err) {
@@ -88,19 +76,6 @@ export default function App() {
     }
   };
 
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setShowCopied(true);
-      setTimeout(() => {
-        setShowCopied(false);
-      }, 3000);
-      toast.success("Copied!");
-    } catch (err) {
-      toast.error(`Error: ${err}`);
-    }
-  }
-
   return (
     <main className="selection:bg-blue-500 selection:text-white">
       <div className="relative">
@@ -131,7 +106,7 @@ export default function App() {
                   "p-4 border-2 border-dashed border-blue-500 text-center",
                   {
                     "border-emerald-500 border-solid bg-emerald-500/10": !!file,
-                  }
+                  },
                 )}
               >
                 {file ? (
@@ -141,7 +116,7 @@ export default function App() {
                       <span className="font-bold">{file.name}</span>
                     </p>
                     <Button variant="destructive" onClick={handleRemove}>
-                      {<Trash2 />}
+                      <Trash2 />
                       Remove File
                     </Button>
                   </div>
@@ -168,61 +143,6 @@ export default function App() {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="space-y-4">
-              <Accordion type="single" collapsible>
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>Intro Offset</AccordionTrigger>
-                  <AccordionContent>
-                    If you made a video where you introduced yourself for 15
-                    seconds and then pressed play, use 15 as the offset value.
-                    The timestamps for all tracks will be adjusted +15 seconds.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <Slider
-                    value={[offset]}
-                    onValueChange={(vals) => setOffset(vals[0])}
-                    max={60}
-                    step={1}
-                  />
-                </div>
-                <Input
-                  type="number"
-                  value={offset}
-                  onChange={(e) => setOffset(Number(e.target.value))}
-                  className="w-20"
-                  min={0}
-                  max={60}
-                />
-                <span className="text-sm text-black">seconds</span>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-semibold">
-                  Tracklist with Timestamps
-                </h2>
-                <Button
-                  className={cn({
-                    "bg-emerald-500 hover:bg-emerald-500": showCopied,
-                  })}
-                  IconLeft={showCopied ? <Check /> : <Copy />}
-                  onClick={handleCopy}
-                >
-                  {showCopied ? "Copied" : "Copy to Clipboard"}
-                </Button>
-              </div>
-              <Textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                className="min-h-[300px]"
-                placeholder="Your tracklist with timestamps will appear here..."
-              />
             </div>
           </div>
         </div>

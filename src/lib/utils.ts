@@ -19,7 +19,7 @@ export function jsonToMultilineString(jsonData: TracksData) {
   return jsonData.data
     .map(
       (track) =>
-        `${track.trackPosition} - ${track.songname} - ${track.timestamp}`
+        `${track.trackPosition} - ${track.songname} - ${track.timestamp}`,
     )
     .join("\n");
 }
@@ -43,7 +43,7 @@ export function parseCueFileToJSON(cueContent: string) {
     } else if (line.startsWith("TITLE") && currentTrack) {
       currentTrack.songname = line.substring(
         line.indexOf('"') + 1,
-        line.lastIndexOf('"')
+        line.lastIndexOf('"'),
       );
     } else if (line.startsWith("INDEX 01") && currentTrack) {
       currentTrack.timestamp = line.split(" ")[2];
@@ -55,4 +55,8 @@ export function parseCueFileToJSON(cueContent: string) {
   }
 
   return { data: tracks };
+}
+
+export function isCueFile(file: File) {
+  return file.name.toLowerCase().endsWith(".cue");
 }
