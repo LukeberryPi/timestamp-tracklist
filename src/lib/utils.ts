@@ -96,7 +96,7 @@ export function parseCueFileToJSON(cueContent: string) {
     else if (line.startsWith("PERFORMER") && currentTrack) {
       currentTrack.artist = line.substring(
         line.indexOf('"') + 1,
-        line.lastIndexOf('"')
+        line.lastIndexOf('"'),
       );
     }
     else if (line.startsWith("TITLE") && currentTrack) {
@@ -124,4 +124,8 @@ export function parseCueFileToJSON(cueContent: string) {
   }
 
   return { data: tracks };
+}
+
+export function isCueFile(file: File) {
+  return file.name.toLowerCase().endsWith(".cue");
 }
