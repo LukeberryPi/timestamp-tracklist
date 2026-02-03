@@ -5,16 +5,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center px-4 py-2 hover:[&>svg]:-rotate-15 [&>svg]:transition-all [&>svg]:size-4 justify-center gap-2 whitespace-nowrap rounded-full transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none outline-none focus-visible:ring-blue-500 focus-visible:ring-[3px] aria-invalid:ring-red-200 aria-invalid:border-red-500 rounded-full cursor-pointer shadow-[2px_2px_#000000]  hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_#000000] active:ring-0 active:translate-x-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 active:shadow-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-blue-500 text-white hover:bg-blue-600",
-        destructive: "bg-red-500 text-white hover:bg-red-600",
+        default: "bg-accent text-neutral-950 border border-transparent hover:bg-accent/90",
+        ghost: "text-neutral-400 border border-neutral-700 hover:bg-neutral-800 hover:text-neutral-100 hover:border-neutral-600",
+        destructive: "bg-red-500 text-white border border-transparent hover:bg-red-600",
+        outline: "border border-neutral-700 bg-transparent hover:bg-neutral-800 text-neutral-100",
+      },
+      size: {
+        default: "px-3 py-1.5 text-sm",
+        lg: "px-5 py-2.5 text-base",
+        sm: "px-2 py-1 text-xs",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 );
@@ -22,6 +30,7 @@ const buttonVariants = cva(
 function Button({
   className,
   variant,
+  size,
   asChild = false,
   IconLeft,
   children,
@@ -36,7 +45,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, className }))}
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
       {!!IconLeft && IconLeft}
