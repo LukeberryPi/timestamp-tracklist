@@ -13,7 +13,7 @@ export default function HomePage() {
             <span className="block text-accent animate-fade-in-up animation-delay-100">Tracklist</span>
           </h1>
 
-          <p className="text-xl text-neutral-400 max-w-md font-mono animate-fade-in-up animation-delay-200">
+          <p className="text-xl text-neutral-400 max-w-md animate-fade-in-up animation-delay-200">
             Upload your Rekordbox .cue file.
             <br />
             Get YouTube-ready timestamps instantly.
@@ -31,7 +31,7 @@ export default function HomePage() {
 
         {/* Minimal feature hints */}
         <div className="mt-32 pt-12 border-t border-neutral-800">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-neutral-500 font-mono">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-neutral-500">
             <div className="animate-fade-in-up animation-delay-400">01 — Drop file</div>
             <div className="animate-fade-in-up animation-delay-500">02 — Set offset</div>
             <div className="animate-fade-in-up animation-delay-600">03 — Copy tracklist</div>

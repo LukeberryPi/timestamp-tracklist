@@ -9,7 +9,7 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <Link
             to="/"
-            className="text-lg font-semibold text-neutral-100 hover:text-accent transition-colors font-mono tracking-tight"
+            className="text-lg font-semibold text-neutral-100 hover:text-accent transition-colors tracking-tight"
           >
             TT
           </Link>

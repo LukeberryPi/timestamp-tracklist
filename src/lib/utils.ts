@@ -17,16 +17,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Convert .cue timestamp (MM:SS:FF) to total seconds
- * FF are CD frames (75 frames per second)
+ * Convert .cue timestamp (HH:MM:SS) to total seconds
  */
 function cueTimestampToSeconds(cueTimestamp: string): number {
   const parts = cueTimestamp.split(':');
-  const minutes = parseInt(parts[0]);
-  const seconds = parseInt(parts[1]);
-  const frames = parseInt(parts[2] || '0');
+  const hours = parseInt(parts[0]);
+  const minutes = parseInt(parts[1]);
+  const seconds = parseInt(parts[2]);
 
-  return minutes * 60 + seconds + (frames / 75);
+  return hours * 3600 + minutes * 60 + seconds;
 }
 
 /**
@@ -46,14 +45,15 @@ function secondsToTimestamp(totalSeconds: number): string {
     const minStr = minutes.toString().padStart(2, '0');
     return `${hours}:${minStr}:${secStr}`;
   } else {
-    // mm:ss or m:ss format (e.g., "5:32" or "45:12")
-    return `${minutes}:${secStr}`;
+    // mm:ss format (e.g., "05:32" or "45:12")
+    const minStr = minutes.toString().padStart(2, '0');
+    return `${minStr}:${secStr}`;
   }
 }
 
-export function jsonToMultilineString(jsonData: TracksData, offsetSeconds: number = 0) {
+export function jsonToMultilineString(jsonData: TracksData, offsetSeconds: number = 0, showSongNumber: boolean = true) {
   return jsonData.data
-    .map((track) => {
+    .map((track, index) => {
       // Convert cue timestamp to seconds
       const trackSeconds = cueTimestampToSeconds(track.timestamp);
 
@@ -69,7 +69,8 @@ export function jsonToMultilineString(jsonData: TracksData, offsetSeconds: numbe
         ? `${track.artist} - ${track.songname}`
         : track.songname;
 
-      return `${timestamp} ${trackInfo}`;
+      const prefix = showSongNumber ? `${index + 1}) ` : '';
+      return `${prefix}${timestamp} ${trackInfo}`;
     })
     .join("\n");
 }

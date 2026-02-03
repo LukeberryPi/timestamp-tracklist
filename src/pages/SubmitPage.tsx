@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { cn, jsonToMultilineString, parseCueFileToJSON } from "@/lib/utils";
 import { toast } from "sonner";
 import { Check, Copy, Trash2, Upload, Info } from "lucide-react";
@@ -13,17 +14,18 @@ export default function SubmitPage() {
   const [offset, setOffset] = useState(0);
   const [text, setText] = useState("");
   const [showCopied, setShowCopied] = useState(false);
+  const [showSongNumber, setShowSongNumber] = useState(true);
   const [parsedData, setParsedData] = useState<ReturnType<typeof parseCueFileToJSON> | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Recalculate tracklist when offset changes
+  // Recalculate tracklist when offset or showSongNumber changes
   useEffect(() => {
     if (parsedData) {
-      const formattedTracklistWithTimestamps = jsonToMultilineString(parsedData, offset);
+      const formattedTracklistWithTimestamps = jsonToMultilineString(parsedData, offset, showSongNumber);
       setText(formattedTracklistWithTimestamps);
     }
-  }, [offset, parsedData]);
+  }, [offset, parsedData, showSongNumber]);
 
   const isCueFile = (file: File) => {
     return file.name.toLowerCase().endsWith(".cue");
@@ -50,7 +52,7 @@ export default function SubmitPage() {
         const rawCueContent = await droppedFile.text();
         const cueJson = parseCueFileToJSON(rawCueContent);
         setParsedData(cueJson);
-        const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson, offset);
+        const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson, offset, showSongNumber);
         setText(formattedTracklistWithTimestamps);
         setFile(droppedFile);
         toast.success("Cue file loaded");
@@ -83,7 +85,7 @@ export default function SubmitPage() {
         const rawCueContent = await selectedFile.text();
         const cueJson = parseCueFileToJSON(rawCueContent);
         setParsedData(cueJson);
-        const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson, offset);
+        const formattedTracklistWithTimestamps = jsonToMultilineString(cueJson, offset, showSongNumber);
         setText(formattedTracklistWithTimestamps);
         setFile(selectedFile);
         toast.success("Cue file loaded");
@@ -146,7 +148,7 @@ export default function SubmitPage() {
                   <div className="space-y-3 text-center">
                     <p className="text-sm text-neutral-300">
                       File loaded:{" "}
-                      <span className="font-semibold text-neutral-100 font-mono">{file.name}</span>
+                      <span className="font-semibold text-neutral-100">{file.name}</span>
                     </p>
                     <Button variant="destructive" size="default" onClick={handleRemove}>
                       <Trash2 />
@@ -178,35 +180,50 @@ export default function SubmitPage() {
               </div>
             </div>
 
-            {/* Offset Section */}
-            <div className="border border-neutral-700 bg-neutral-900 p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-medium text-neutral-100">Intro Offset</h2>
-                <div className="group/tooltip relative">
-                  <Info className="size-4 text-neutral-500 hover:text-neutral-300 cursor-help" />
-                  <div className="absolute right-0 top-6 w-64 p-3 bg-neutral-800 border border-neutral-700 text-xs text-neutral-300 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-10">
-                    If you made a video where you introduced yourself for 15 seconds and then pressed play, use 15 as the offset value. All timestamps will be adjusted accordingly.
+            {/* Settings Section */}
+            <div className="border border-neutral-700 bg-neutral-900 p-6 space-y-6">
+              {/* Offset */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-medium text-neutral-100">Intro Offset</h2>
+                  <div className="group/tooltip relative">
+                    <Info className="size-4 text-neutral-500 hover:text-neutral-300 cursor-help" />
+                    <div className="absolute right-0 top-6 w-64 p-3 bg-neutral-800 border border-neutral-700 text-xs text-neutral-300 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-10">
+                      If you made a video where you introduced yourself for 15 seconds and then pressed play, use 15 as the offset value. All timestamps will be adjusted accordingly.
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <Slider
-                    value={[offset]}
-                    onValueChange={(vals) => setOffset(vals[0])}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <Slider
+                      value={[offset]}
+                      onValueChange={(vals) => setOffset(vals[0])}
+                      max={60}
+                      step={1}
+                    />
+                  </div>
+                  <Input
+                    type="number"
+                    value={offset}
+                    onChange={(e) => setOffset(Number(e.target.value))}
+                    className="w-20"
+                    min={0}
                     max={60}
-                    step={1}
                   />
+                  <span className="text-sm text-neutral-500">sec</span>
                 </div>
-                <Input
-                  type="number"
-                  value={offset}
-                  onChange={(e) => setOffset(Number(e.target.value))}
-                  className="w-20"
-                  min={0}
-                  max={60}
+              </div>
+
+              {/* Show Song Number */}
+              <div className="flex items-center justify-between">
+                <label htmlFor="show-song-number" className="text-sm font-medium text-neutral-100">
+                  Show song numbers
+                </label>
+                <Switch
+                  id="show-song-number"
+                  checked={showSongNumber}
+                  onCheckedChange={setShowSongNumber}
                 />
-                <span className="text-sm text-neutral-500 font-mono">sec</span>
               </div>
             </div>
 
@@ -225,7 +242,7 @@ export default function SubmitPage() {
                 <Textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[400px] font-mono text-sm"
+                  className="min-h-[400px] text-sm"
                   placeholder="Your tracklist with timestamps will appear here..."
                 />
               </div>
