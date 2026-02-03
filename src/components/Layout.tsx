@@ -1,29 +1,36 @@
-import { Link, Outlet } from "@tanstack/react-router";
+"use client";
+
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
 
-export default function Layout() {
+type LayoutProps = {
+  children: ReactNode;
+};
+
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-neutral-950">
       <header className="h-14 border-b border-neutral-800 bg-neutral-950 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <Link
-            to="/"
+            href="/"
             className="text-lg font-semibold text-neutral-100 hover:text-accent transition-colors tracking-tight"
           >
             TT
           </Link>
           <nav className="flex gap-2">
-            <Link to="/">
-              <Button variant="ghost" size="default">Home</Button>
-            </Link>
-            <Link to="/submit">
-              <Button variant="default" size="default">Upload</Button>
-            </Link>
+            <Button variant="ghost" size="default" asChild>
+              <Link href="/">Home</Link>
+            </Button>
+            <Button variant="default" size="default" asChild>
+              <Link href="/submit">Upload</Link>
+            </Button>
           </nav>
         </div>
       </header>
-      <Outlet />
+      {children}
       <Toaster
         position="top-center"
         toastOptions={{

@@ -41,6 +41,14 @@ function Button({
     IconLeft?: React.ReactNode;
   }) {
   const Comp = asChild ? Slot : "button";
+  const content = asChild ? (
+    children
+  ) : (
+    <>
+      {!!IconLeft && IconLeft}
+      {children}
+    </>
+  );
 
   return (
     <Comp
@@ -48,8 +56,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {!!IconLeft && IconLeft}
-      {children}
+      {content}
     </Comp>
   );
 }
